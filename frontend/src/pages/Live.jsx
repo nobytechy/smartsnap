@@ -24,7 +24,7 @@ export default function Live() {
   const [errorMsg, setErrorMsg] = useState(null);
   const [imgSrc, setImgSrc] = useState(null);
   const [overlay, setOverlay] = useState(true);   // show AI bounding boxes
-  const [showMotion, setShowMotion] = useState(false);
+  const [showMotion, setShowMotion] = useState(true);  // show motion regions
   const tickRef = useRef(null);
 
   useEffect(() => {
