@@ -1,0 +1,44 @@
+# ── Node / Vite frontend ──────────────────────────────────────────
+node_modules/
+**/dist/
+.vite/
+*.log
+
+# ── Env files (NEVER commit) ──────────────────────────────────────
+.env
+.env.local
+.env.*.local
+**/api/.env
+
+# ── Python backend ────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+
+# ── Frigate runtime data (videos, snapshots, db, model cache) ─────
+backend/frigate/media/
+backend/frigate/config/model_cache/
+backend/frigate/config/config.yml.backup
+backend/frigate/config/.streams.json
+backend/frigate/config/.timeline.db*
+backend/mosquitto/data/
+backend/mosquitto/log/
+
+# ── Local helper binaries ─────────────────────────────────────────
+backend/tools/
+
+# ── Editors / OS ──────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Misc build artefacts ──────────────────────────────────────────
+*.pid
+*.sock
+coverage/

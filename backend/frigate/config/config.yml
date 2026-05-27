@@ -1,0 +1,99 @@
+mqtt:
+  host: mosquitto
+  port: 1883
+  topic_prefix: frigate
+detectors:
+  ov:
+    type: openvino
+    device: CPU
+model:
+  model_type: ssd
+  width: 300
+  height: 300
+  input_tensor: nhwc
+  input_pixel_format: bgr
+  path: /openvino-model/ssdlite_mobilenet_v2.xml
+  labelmap_path: /openvino-model/coco_91cl_bkgr.txt
+record:
+  enabled: true
+  alerts:
+    retain:
+      days: 14
+  detections:
+    retain:
+      days: 14
+  continuous:
+    days: 0
+  motion:
+    days: 3
+snapshots:
+  enabled: true
+  retain:
+    default: 14
+objects:
+  track:
+  - person
+  - car
+  - truck
+  - motorcycle
+  - bicycle
+  - bus
+  - dog
+  - cat
+  - backpack
+  - handbag
+  - suitcase
+  - bottle
+  - cup
+  - knife
+  - tv
+  - laptop
+  - cell phone
+  - book
+  - chair
+  - couch
+  - dining table
+  - potted plant
+  - oven
+  - refrigerator
+  - microwave
+  - sports ball
+  - teddy bear
+review:
+  alerts:
+    labels:
+    - person
+  detections:
+    labels:
+    - person
+    - car
+    - motorcycle
+    - bicycle
+    - bus
+    - dog
+    - cat
+cameras:
+  test:
+    enabled: true
+    ffmpeg:
+      inputs:
+      - path: http://10.81.183.67:8080/video
+        roles:
+        - detect
+        - record
+        input_args:
+        - -fflags
+        - +genpts+discardcorrupt
+        - -flags
+        - low_delay
+        - -rtbufsize
+        - 100M
+    detect:
+      enabled: true
+      width: 1280
+      height: 720
+      fps: 5
+    motion:
+      threshold: 20
+      contour_area: 5
+      frame_alpha: 0.05

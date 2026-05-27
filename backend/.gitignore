@@ -1,0 +1,8 @@
+api/.env
+**/.env.local
+**/__pycache__/
+frigate/media/
+frigate/clips/
+mosquitto/data/
+mosquitto/log/
+*.log

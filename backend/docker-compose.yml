@@ -1,0 +1,59 @@
+name: smartsnap
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: smartsnap-mosquitto
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config:ro
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+    mem_limit: 128m
+    cpus: 0.25
+
+  frigate:
+    image: ghcr.io/blakeblackshear/frigate:stable
+    container_name: smartsnap-frigate
+    restart: unless-stopped
+    shm_size: "512mb"
+    depends_on:
+      - mosquitto
+    environment:
+      FRIGATE_RTSP_PASSWORD: "${FRIGATE_RTSP_PASSWORD:-changeme}"
+    ports:
+      - "5000:5000"   # Frigate UI
+      - "8554:8554"   # RTSP restream
+      - "8555:8555/tcp"
+      - "8555:8555/udp"
+    volumes:
+      - ./frigate/config:/config
+      - ./frigate/media:/media/frigate
+      - /etc/localtime:/etc/localtime:ro
+    # Bias toward Frigate — it does the CV work. 3 of 4 vCPUs, 3.5 GB RAM.
+    mem_limit: 3500m
+    cpus: 3.0
+
+  api:
+    build:
+      context: ./api
+    container_name: smartsnap-api
+    restart: unless-stopped
+    depends_on:
+      - mosquitto
+    env_file:
+      - ./api/.env
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./api/app:/app/app
+      - ./frigate/config:/config              # so write_config_file lands on Frigate's actual config
+      - ./frigate/media:/media/frigate:ro
+    mem_limit: 1g
+    cpus: 1.0
+
+volumes:
+  mosquitto_data:
+  mosquitto_log:

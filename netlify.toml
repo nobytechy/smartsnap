@@ -1,0 +1,15 @@
+# Netlify monorepo config — points the build at the frontend/ folder
+# and rewrites SPA routes so /live, /login, /app/* all resolve to index.html.
+
+[build]
+  base    = "frontend"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
