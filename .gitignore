@@ -20,10 +20,10 @@ venv/
 
 # ── Frigate runtime data (videos, snapshots, db, model cache) ─────
 backend/frigate/media/
-backend/frigate/config/model_cache/
-backend/frigate/config/config.yml.backup
-backend/frigate/config/.streams.json
-backend/frigate/config/.timeline.db*
+# Everything in frigate/config/ is runtime state — ONLY the user-edited
+# config.yml is tracked. Frigate (re)generates the rest at boot.
+backend/frigate/config/*
+!backend/frigate/config/config.yml
 backend/mosquitto/data/
 backend/mosquitto/log/
 

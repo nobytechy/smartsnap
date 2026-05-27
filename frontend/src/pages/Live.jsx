@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Home, LogIn } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Home, LogIn, Sparkles, Eye } from 'lucide-react';
 import { getApiBaseUrl, getBranding } from '@/lib/settings';
 import { cn } from '@/lib/cn';
 
@@ -23,6 +23,8 @@ export default function Live() {
   const [connected, setConnected] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const [imgSrc, setImgSrc] = useState(null);
+  const [overlay, setOverlay] = useState(true);   // show AI bounding boxes
+  const [showMotion, setShowMotion] = useState(false);
   const tickRef = useRef(null);
 
   useEffect(() => {
@@ -44,12 +46,18 @@ export default function Live() {
   useEffect(() => {
     if (!current || !apiBase) return;
     function tick() {
-      setImgSrc(`${apiBase}/frigate/snapshot/${current.slug}?t=${Date.now()}`);
+      const params = new URLSearchParams({
+        bbox: overlay ? 1 : 0,
+        motion: showMotion ? 1 : 0,
+        timestamp: 1,
+        t: Date.now(),
+      });
+      setImgSrc(`${apiBase}/frigate/snapshot/${current.slug}?${params}`);
     }
     tick();
     tickRef.current = setInterval(tick, POLL_MS);
     return () => clearInterval(tickRef.current);
-  }, [current?.slug, apiBase]);
+  }, [current?.slug, apiBase, overlay, showMotion]);
 
   function prev() { setIdx((i) => (i - 1 + cameras.length) % cameras.length); }
   function next() { setIdx((i) => (i + 1) % cameras.length); }
@@ -157,7 +165,33 @@ export default function Live() {
                   <span className="ml-2 text-xs text-ink-400">({idx + 1} / {cameras.length})</span>
                 )}
               </div>
-              <div className="text-xs text-ink-400">Refreshes every {POLL_MS} ms</div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setOverlay((v) => !v)}
+                  title="Toggle AI bounding boxes"
+                  className={cn(
+                    'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition',
+                    overlay
+                      ? 'bg-gold-500 text-ink-950 hover:bg-gold-400'
+                      : 'bg-white/10 text-ink-200 hover:bg-white/20',
+                  )}
+                >
+                  <Sparkles size={13} /> AI overlay
+                </button>
+                <button
+                  onClick={() => setShowMotion((v) => !v)}
+                  title="Toggle motion regions"
+                  className={cn(
+                    'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition',
+                    showMotion
+                      ? 'bg-burgundy-600 text-white hover:bg-burgundy-500'
+                      : 'bg-white/10 text-ink-200 hover:bg-white/20',
+                  )}
+                >
+                  <Eye size={13} /> Motion
+                </button>
+                <span className="ml-1 text-xs text-ink-500">{POLL_MS} ms</span>
+              </div>
             </div>
           </div>
         )}

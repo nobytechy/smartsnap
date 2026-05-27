@@ -104,13 +104,30 @@ async def list_frigate_cameras():
 
 
 @app.get("/frigate/snapshot/{camera}")
-async def frigate_snapshot(camera: str, height: int = 720):
-    """Public proxy: returns the latest snapshot of a camera from Frigate."""
+async def frigate_snapshot(
+    camera: str,
+    height: int = 720,
+    bbox: int = 0,           # draw bounding boxes around detected objects
+    motion: int = 0,         # outline motion regions
+    regions: int = 0,        # outline inference regions
+    timestamp: int = 0,      # overlay timestamp
+    quality: int = 80,
+):
+    """Public proxy: returns the latest snapshot of a camera from Frigate.
+    Forwards the optional annotation flags (bbox/motion/regions/timestamp)."""
     base = settings.frigate_url.rstrip("/")
+    params = {
+        "height": height,
+        "bbox": bbox,
+        "motion": motion,
+        "regions": regions,
+        "timestamp": timestamp,
+        "quality": quality,
+    }
     async with httpx.AsyncClient(timeout=5.0) as client:
         for ext in ("webp", "jpg"):
             try:
-                r = await client.get(f"{base}/api/{camera}/latest.{ext}", params={"height": height})
+                r = await client.get(f"{base}/api/{camera}/latest.{ext}", params=params)
             except httpx.HTTPError:
                 continue
             if r.status_code == 200 and r.content:
