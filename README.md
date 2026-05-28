@@ -80,8 +80,4 @@ cd backend && docker compose up -d
 # Paste supabase/install.sql into the Supabase SQL editor
 ```
 
-See `CLAUDE.md` for the full project map and `Instructions.md` for the operator manual.
-
----
-
 Powered by [Noby](https://nobie.netlify.app).
