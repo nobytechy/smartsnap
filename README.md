@@ -81,3 +81,9 @@ cd backend && docker compose up -d
 ```
 
 Powered by [Noby](https://nobie.netlify.app).
+
+## Screenshots
+
+![smartsnap](docs/screenshots/smartsnap.jpg)
+
+**Live:** https://smartsnap.netlify.app · Built by [Noby Tebulo](https://nobie.netlify.app)
